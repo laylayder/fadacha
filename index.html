@@ -3,74 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>股票質押風險計算機</title>
+    <title>股票質押風險計算機 (含自動取價)
+    </title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #f3f4f6; }
-        .card { background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        /* 背景改成極深灰色，比純黑更有質感 */
+        body { background-color: #111827; color: #f3f4f6; }
+        /* 卡片改成深灰色，並加上細微邊框 */
+        .card { background: #1f2937; border: 1px solid #374151; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); }
+        /* 輸入框在深色模式下的樣式 */
+        input { background-color: #374151 !important; border-color: #4b5563 !important; color: white !important; }
+        input:focus { border-color: #3b82f6 !important; ring: 2px #3b82f6; }
     </style>
 </head>
 <body class="p-4 md:p-8">
     <div class="max-w-2xl mx-auto">
-        <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">股票質押發大財壓力測試計算機</h1>
+        <h1 class="text-2xl font-bold text-blue-400 mb-6 text-center">質押發大財壓力測試計算機</h1>
+        <h2 class="text-xl font-bold text-blue-400 mb-6 text-center">自動取價待開發 夜班累累</h2>
+        <h2 class="text-xl font-bold text-blue-400 mb-6 text-center">歐印就對了 信心喊話</h2>
         
         <div class="card p-6 mb-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">股票名稱/代碼</label>
-                    <input type="text" id="stockName" value="006208" class="mt-1 block w-full border border-gray-300 rounded-md p-2">
+                <div class="relative">
+                    <label class="block text-sm font-medium text-blue-700">股票代碼</label>
+                    <div class="flex mt-1">
+                        <input type="text" id="stockName" value="006208" inputmode="numeric" 
+                               class="block w-full border border-gray-300 rounded-l-md p-2 focus:ring-blue-500 focus:border-blue-500"
+                               onclick="this.select()">
+                        <button onclick="fetchPrice()" id="fetchBtn" 
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-3 rounded-r-md text-sm transition-colors flex items-center active:scale-95 transition-transform">
+                            抓取現價
+                        </button>
+                    </div>
+                    <p id="statusMsg" class="text-xs mt-1 text-blue-400">輸入代碼後點擊抓取</p>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">持有股數 (股)</label>
-                    <input type="number" id="shares" value="48018" class="mt-1 block w-full border border-gray-300 rounded-md p-2">
+                    <label class="block text-sm font-medium text-blue-700">持有股數 (股)</label>
+                    <input type="number" id="shares" value="5000" inputmode="numeric" pattern="[0-9]*" class="mt-1 block w-full border border-gray-300 rounded-md p-2" onclick="this.select()">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">當前股價 (元)</label>
-                    <input type="number" id="price" value="202.5" step="0.1" class="mt-1 block w-full border border-gray-300 rounded-md p-2">
+                    <label class="block text-sm font-medium text-blue-700">當前股價 (元)</label>
+                    <input type="number" id="price" value="170" step="0.1" inputmode="decimal" class="mt-1 block w-full border border-gray-300 rounded-md p-2" onclick="this.select()">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">借款金額 (萬元)</label>
-                    <input type="number" id="loanWan" value="200" class="mt-1 block w-full border border-gray-300 rounded-md p-2">
+                    <label class="block text-sm font-medium text-blue-700">借款金額 (萬元)</label>
+                    <input type="number" id="loanWan" value="200" inputmode="numeric" class="mt-1 block w-full border border-gray-300 rounded-md p-2" onclick="this.select()">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">借款利率 (%)</label>
-                    <input type="number" id="rate" value="2.48" step="0.01" class="mt-1 block w-full border border-gray-300 rounded-md p-2">
+                    <label class="block text-sm font-medium text-blue-700">借款利率 (%)</label>
+                    <input type="number" id="rate" value="2.48" step="0.01" inputmode="decimal" class="mt-1 block w-full border border-gray-300 rounded-md p-2" onclick="this.select()">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">最低維持率 (%)</label>
-                    <input type="number" id="threshold" value="130" class="mt-1 block w-full border border-gray-300 rounded-md p-2">
+                    <label class="block text-sm font-medium text-blue-700">最低維持率 (%)</label>
+                    <input type="number" id="threshold" value="130" inputmode="numeric" class="mt-1 block w-full border border-gray-300 rounded-md p-2" onclick="this.select()">
                 </div>
             </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="card p-4 text-center">
-                <p class="text-sm text-gray-500">當前總市值</p>
+                <p class="text-sm text-blue-500">當前總市值</p>
                 <p id="resMarketValue" class="text-xl font-bold text-blue-600">NT$ 0</p>
             </div>
             <div class="card p-4 text-center">
-                <p class="text-sm text-gray-500">當前維持率</p>
+                <p class="text-sm text-blue-500">當前維持率</p>
                 <p id="resRatio" class="text-xl font-bold text-green-600">0%</p>
             </div>
             <div class="card p-4 text-center">
-                <p class="text-sm text-gray-500">年利息費用</p>
+                <p class="text-sm text-blue-500">年利息費用</p>
                 <p id="resInterest" class="text-xl font-bold text-orange-600">NT$ 0</p>
             </div>
             <div class="card p-4 border-2 border-red-200 text-center">
-                <p class="text-sm text-gray-500 text-red-500 font-bold">斷頭通知價 (維持率下限)</p>
+                <p class="text-sm text-blue-500 text-red-500 font-bold">斷頭通知價 (維持率下限)</p>
                 <p id="resCallPrice" class="text-2xl font-black text-red-600">NT$ 0</p>
             </div>
         </div>
 
-        <div class="mt-6 text-sm text-gray-400 text-center">
-            * 斷頭價公式：(借款金額 × 維持率下限) ÷ 股數<br>
-            * 請以銀行實際合約數值為準
+        <div class="mt-6 text-xs text-gray-400 text-center space-y-1">
+            <p>* 數據來源：FinMind 開放 API (收盤價為準) </p>
+            <p>*搞不定 改天試試看 累累*</p>
+            <p>* 下海幹活價公式：(借款金額 × 維持率下限) ÷ 股數</p>
+            <p>* 贏了會館嫩模 輸了下海幹活 *</p>
         </div>
     </div>
 
     <script>
         const inputs = ['shares', 'price', 'loanWan', 'rate', 'threshold'];
         
+        // 核心計算功能
         function calculate() {
             const shares = parseFloat(document.getElementById('shares').value) || 0;
             const price = parseFloat(document.getElementById('price').value) || 0;
@@ -83,13 +103,11 @@
             const interest = loan * (rate / 100);
             const callPrice = shares > 0 ? (loan * threshold) / shares : 0;
 
-            // 更新 UI
-            document.getElementById('resMarketValue').innerText = `NT$ ${marketValue.toLocaleString()}`;
+            document.getElementById('resMarketValue').innerText = `NT$ ${Math.round(marketValue).toLocaleString()}`;
             document.getElementById('resRatio').innerText = `${ratio.toFixed(2)}%`;
             document.getElementById('resInterest').innerText = `NT$ ${Math.round(interest).toLocaleString()}`;
             document.getElementById('resCallPrice').innerText = `NT$ ${callPrice.toFixed(2)}`;
 
-            // 顏色警示
             const ratioEl = document.getElementById('resRatio');
             if (ratio < 140) {
                 ratioEl.className = "text-xl font-bold text-red-600";
@@ -100,6 +118,51 @@
             }
         }
 
+        // 自動取價功能
+        async function fetchPrice() {
+            const stockId = document.getElementById('stockName').value.trim();
+            const btn = document.getElementById('fetchBtn');
+            const status = document.getElementById('statusMsg');
+            
+            if (!stockId) return alert('請輸入股票代碼');
+
+            btn.disabled = true;
+            btn.innerText = '讀取中...';
+            status.innerText = '連線至 FinMind API...';
+
+            try {
+                // 取得今天日期（簡單格式 YYYY-MM-DD）
+                const today = new Date().toISOString().split('T')[0];
+                // 呼叫 FinMind 台灣股市資料 API
+                const url = `https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id=${stockId}&start_date=${today}`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.data && data.data.length > 0) {
+                    const lastData = data.data[data.data.length - 1];
+                    const closePrice = lastData.close;
+                    
+                    document.getElementById('price').value = closePrice;
+                    status.innerText = `成功抓取：${stockId} 價格為 ${closePrice}`;
+                    status.className = "text-xs mt-1 text-blue-500 font-bold";
+                    calculate();
+                } else {
+                    // 若今日還沒收盤，嘗試抓取較早的資料
+                    status.innerText = '查無今日數據，請手動更新或確認代碼';
+                    status.className = "text-xs mt-1 text-red-500";
+                }
+            } catch (error) {
+                console.error(error);
+                status.innerText = '抓取失敗，請確認代碼或網路';
+                status.className = "text-xs mt-1 text-red-500";
+            } finally {
+                btn.disabled = false;
+                btn.innerText = '抓取現價';
+            }
+        }
+
+        // 監聽所有輸入框變動
         inputs.forEach(id => {
             document.getElementById(id).addEventListener('input', calculate);
         });
