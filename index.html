@@ -7,11 +7,11 @@
     </title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* 背景改成極深灰色，比純黑更有質感 */
+        /* 背景 */
         body { background-color: #111827; color: #f3f4f6; }
-        /* 卡片改成深灰色，並加上細微邊框 */
+        /* 卡片 */
         .card { background: #1f2937; border: 1px solid #374151; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); }
-        /* 輸入框在深色模式下的樣式 */
+        /* 輸入框*/
         input { background-color: #374151 !important; border-color: #4b5563 !important; color: white !important; }
         input:focus { border-color: #3b82f6 !important; ring: 2px #3b82f6; }
     </style>
@@ -74,7 +74,7 @@
                 <p id="resInterest" class="text-xl font-bold text-orange-600">NT$ 0</p>
             </div>
             <div class="card p-4 border-2 border-red-200 text-center">
-                <p class="text-sm text-blue-500 text-red-500 font-bold">所需最低價 (維持率下限)</p>
+                <p class="text-sm text-blue-500 text-red-500 font-bold">所需最低股價 (維持率下限)</p>
                 <p id="resCallPrice" class="text-2xl font-black text-red-600">NT$ 0</p>
             </div>
         </div>
@@ -90,22 +90,35 @@
     <script>
         const inputs = ['shares', 'price', 'loanWan', 'rate', 'threshold'];
         
-        // 核心計算功能
+        /* 核心計算功能*/
         function calculate() {
+            //股數
             const shares = parseFloat(document.getElementById('shares').value) || 0;
+            //股價 
             const price = parseFloat(document.getElementById('price').value) || 0;
+            //借貸總額 
             const loan = (parseFloat(document.getElementById('loanWan').value) || 0) * 10000;
-            const rate = parseFloat(document.getElementById('rate').value) || 0;
-            const threshold = (parseFloat(document.getElementById('threshold').value) || 0) / 100;
+            //貸款利率 
+            const rate = parseFloat(document.getElementById('rate').value) || 0; //貸款利率
+            //維持率
+            const threshold = (parseFloat(document.getElementById('threshold').value) || 0) / 100; 
 
+            //市值
             const marketValue = shares * price;
+            //借貸比例
             const ratio = loan > 0 ? (marketValue / loan) * 100 : 0;
+            //利息 
             const interest = loan * (rate / 100);
-            const callPrice = shares > 0 ? (loan * threshold) / shares : 0;
+            //所需最低價 
+            const callPrice = shares > 0 ? (loan * threshold) / shares : 0; 
 
+            //當前市值 Math.round(marketValue) 四捨五入
             document.getElementById('resMarketValue').innerText = `NT$ ${Math.round(marketValue).toLocaleString()}`;
+            //當前維持率
             document.getElementById('resRatio').innerText = `${ratio.toFixed(2)}%`;
+            //年利息
             document.getElementById('resInterest').innerText = `NT$ ${Math.round(interest).toLocaleString()}`;
+            //所需最低價
             document.getElementById('resCallPrice').innerText = `NT$ ${callPrice.toFixed(2)}`;
 
             const ratioEl = document.getElementById('resRatio');
@@ -162,7 +175,7 @@
             }
         }
 
-        // 監聽所有輸入框變動
+        // 自動計算
         inputs.forEach(id => {
             document.getElementById(id).addEventListener('input', calculate);
         });
