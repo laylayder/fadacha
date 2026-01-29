@@ -3,34 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>股票質押風險計算機 (含自動取價)
-    </title>
+    <title>股票質押風險計算機 (含自動取價)</title>
+
+    <link rel="icon" href="icon.png" type="image/png">
+    <link rel="apple-touch-icon" href="icon.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* 背景 */
-        body { background-color: #111827; color: #f3f4f6; }
+        body { background-color: #111827; color: #f3f4f6; overflow-x: hidden; }
         /* 卡片 */
         .card { background: #1f2937; border: 1px solid #374151; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); }
         /* 輸入框*/
         input { background-color: #374151 !important; border-color: #4b5563 !important; color: white !important; }
         input:focus { border-color: #3b82f6 !important; ring: 2px #3b82f6; }
+        
+        /* 側邊欄過渡效果 */
+        #logSidebar { transition: transform 0.3s ease-in-out; }
     </style>
 </head>
 <body class="p-4 md:p-8">
     <div class="max-w-2xl mx-auto">
-        <h1 class="text-2xl font-bold text-blue-400 mb-6 text-center">質押發大財壓力測試計算機</h1>
+        <div class="flex justify-center items-center gap-2 mb-2">
+            <h1 class="text-2xl font-bold text-blue-400 text-center">質押發大財壓力測試計算機V2.1</h1>
+            <button onclick="toggleLog(true)" class="text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 px-2 py-1 rounded border border-gray-500">
+                更新紀錄
+            </button>
+        </div>
         <h2 class="text-xl font-bold text-blue-400 mb-6 text-center">自動取價待開發 夜班累累</h2>
         <h2 class="text-xl font-bold text-blue-400 mb-6 text-center">歐印就對了 信心喊話</h2>
         
         <div class="card p-6 mb-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="relative">
-                    <label class="block text-sm font-medium text-blue-700">股票代碼</label>
+                    <label class="block text-sm font-medium text-blue-300">股票代碼</label>
                     <div class="flex mt-1">
                         <input type="text" id="stockName" value="006208" inputmode="numeric" 
                                class="block w-full border border-gray-300 rounded-l-md p-2 focus:ring-blue-500 focus:border-blue-500"
                                onclick="this.select()">
-                        <button onclick="fetchPrice()" id="fetchBtn" 
+                        <button onclick="fetchPrice(true)" id="fetchBtn" 
                                 class="bg-blue-600 hover:bg-blue-700 text-white px-3 rounded-r-md text-sm transition-colors flex items-center active:scale-95 transition-transform">
                             抓取現價
                         </button>
@@ -38,24 +49,24 @@
                     <p id="statusMsg" class="text-xs mt-1 text-blue-400">輸入代碼後點擊抓取</p>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-blue-700">持有股數 (股)</label>
-                    <input type="number" id="shares" value="5000" inputmode="numeric" pattern="[0-9]*" class="mt-1 block w-full border border-gray-300 rounded-md p-2" onclick="this.select()">
+                    <label class="block text-sm font-medium text-blue-300">持有張數 (張)</label>
+                    <input type="number" id="shares" value="5" inputmode="numeric" pattern="[0-9]*" class="mt-1 block w-full border border-gray-300 rounded-md p-2" onclick="this.select()">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-blue-700">當前股價 (元)</label>
+                    <label class="block text-sm font-medium text-blue-300">當前股價 (元)</label>
                     <input type="number" id="price" value="170" step="0.1" inputmode="decimal" class="mt-1 block w-full border border-gray-300 rounded-md p-2" onclick="this.select()">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-blue-700">借款金額 (萬元)</label>
-                    <input type="number" id="loanWan" value="200" inputmode="numeric" class="mt-1 block w-full border border-gray-300 rounded-md p-2" onclick="this.select()">
+                    <label class="block text-sm font-medium text-blue-300">借款金額 需小於市值六成(萬元)</label>
+                    <input type="number" id="loanWan" value="20" inputmode="numeric" class="mt-1 block w-full border border-gray-300 rounded-md p-2" onclick="this.select()">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-blue-700">借款利率 (%)</label>
+                    <label class="block text-sm font-medium text-blue-300">借款利率 (%)</label>
                     <input type="number" id="rate" value="2.48" step="0.01" inputmode="decimal" class="mt-1 block w-full border border-gray-300 rounded-md p-2" onclick="this.select()">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-blue-700">最低維持率 (%)</label>
-                    <input type="number" id="threshold" value="130" inputmode="numeric" class="mt-1 block w-full border border-gray-300 rounded-md p-2" onclick="this.select()">
+                    <label class="block text-sm font-medium text-blue-300">最低維持率 (%)</label>
+                    <input type="number" id="threshold" value="140" inputmode="numeric" class="mt-1 block w-full border border-gray-300 rounded-md p-2" onclick="this.select()">
                 </div>
             </div>
         </div>
@@ -79,6 +90,12 @@
             </div>
         </div>
 
+        <div class="mt-6">
+            <button onclick="showGuide()" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2 border border-gray-500 shadow-lg active:scale-95">
+                📲 分享 / 安裝至桌面
+            </button>
+        </div>
+
         <div class="mt-6 text-xs text-gray-400 text-center space-y-1">
             <p>* 數據來源：FinMind 開放 API (收盤價為準) </p>
             <p>*搞不定 改天試試看 累累*</p>
@@ -87,15 +104,65 @@
         </div>
     </div>
 
+    <div id="logOverlay" class="fixed inset-0 bg-black/60 z-40 hidden" onclick="toggleLog(false)"></div>
+    <div id="logSidebar" class="fixed top-0 right-0 w-64 h-full bg-[#1f2937] z-50 p-6 shadow-2xl transform translate-x-full border-l border-gray-700">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold text-blue-400">更新紀錄</h3>
+            <button onclick="toggleLog(false)" class="text-gray-400 text-2xl">&times;</button>
+        </div>
+        <div class="space-y-6 overflow-y-auto h-[90%]">
+            <div class="border-l-2 border-blue-500 pl-4">
+                <p class="text-sm font-bold text-white">V2.1 (最新)</p>
+                <p class="text-xs text-gray-400 mt-1">● 新增更新紀錄</p>
+                
+            </div>
+            <div class="border-l-2 border-gray-600 pl-4">
+                <p class="text-sm font-bold text-gray-300">V2.0</p>
+                <p class="text-xs text-gray-400 mt-1">● 增加分享功能 假裝自己是App</p>
+                <p class="text-xs text-gray-400">● 加入自動計算六成借款邏輯</p>
+                <p class="text-xs text-gray-400">● 改成張來計算 質押不能用零股</p>
+                <p class="text-xs text-gray-400">● 修正張數(1000股)換算公式</p>
+            </div>
+            <div class="border-l-2 border-gray-600 pl-4">
+                <p class="text-sm font-bold text-gray-300">V1.5</p>
+                <p class="text-xs text-gray-400 mt-1">串接 FinMind API 抓股價 時好時壞 跟人生一樣</p>
+                <p class="text-xs text-gray-400">改成深色模式介面 人生默默的發大財</p>
+                <p class="text-xs text-gray-400">有AI幫忙排版 真方便 希望AI幫我賺大錢</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="guideModal" class="fixed inset-0 flex items-center justify-center z-50 hidden p-6" onclick="this.classList.add('hidden')">
+        <div class="card p-8 max-w-sm w-full text-center space-y-4" onclick="event.stopPropagation()">
+            <h3 class="text-xl font-bold text-blue-400">安裝教學</h3>
+            <div class="text-left space-y-4 text-sm text-gray-300">
+                <p><strong>iPhone (Safari):</strong><br>點擊瀏覽器下方 <span class="text-blue-400">「分享箭頭」</span>，選 <span class="text-white font-bold">「加入主畫面」</span>。</p>
+                <hr class="border-gray-700">
+                <p><strong>Android (Chrome):</strong><br>點擊右上角 <span class="text-blue-400">「三個點」</span>，選 <span class="text-white font-bold">「安裝應用程式」</span> 或新增至主畫面。</p>
+            </div>
+            <button onclick="document.getElementById('guideModal').classList.add('hidden')" class="w-full bg-blue-600 text-white py-2 rounded-lg mt-4 font-bold">我知道了</button>
+        </div>
+    </div>
+
     <script>
         const inputs = ['shares', 'price', 'loanWan', 'rate', 'threshold'];
         
         /* 核心計算功能*/
-        function calculate() {
-            //股數
+        function calculate(autoUpdateLoan = false) {
+            //張數 
             const shares = parseFloat(document.getElementById('shares').value) || 0;
             //股價 
             const price = parseFloat(document.getElementById('price').value) || 0;
+            
+            //市值 (1張 = 1000股)
+            const marketValue = shares * price * 1000;
+
+            // --- 新增：自動計算六成借款金額 ---
+            if (autoUpdateLoan === true) {
+                const sixtyPercent = Math.floor((marketValue * 0.6) / 10000);
+                document.getElementById('loanWan').value = sixtyPercent;
+            }
+
             //借貸總額 
             const loan = (parseFloat(document.getElementById('loanWan').value) || 0) * 10000;
             //貸款利率 
@@ -103,14 +170,13 @@
             //維持率
             const threshold = (parseFloat(document.getElementById('threshold').value) || 0) / 100; 
 
-            //市值
-            const marketValue = shares * price;
-            //借貸比例
+            //借貸比例 (維持率)
             const ratio = loan > 0 ? (marketValue / loan) * 100 : 0;
             //利息 
             const interest = loan * (rate / 100);
-            //所需最低價 
-            const callPrice = shares > 0 ? (loan * threshold) / shares : 0; 
+            
+            //所需最低價 (修正公式：需考慮 1000 股為一張)
+            const callPrice = (shares > 0 && loan > 0) ? (loan * threshold) / (shares * 1000) : 0; 
 
             //當前市值 Math.round(marketValue) 四捨五入
             document.getElementById('resMarketValue').innerText = `NT$ ${Math.round(marketValue).toLocaleString()}`;
@@ -132,7 +198,7 @@
         }
 
         // 自動取價功能
-        async function fetchPrice() {
+        async function fetchPrice(updateLoan = false) {
             const stockId = document.getElementById('stockName').value.trim();
             const btn = document.getElementById('fetchBtn');
             const status = document.getElementById('statusMsg');
@@ -144,9 +210,7 @@
             status.innerText = '連線至 FinMind API...';
 
             try {
-                // 取得今天日期（簡單格式 YYYY-MM-DD）
                 const today = new Date().toISOString().split('T')[0];
-                // 呼叫 FinMind 台灣股市資料 API
                 const url = `https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id=${stockId}&start_date=${today}`;
                 
                 const response = await fetch(url);
@@ -159,9 +223,10 @@
                     document.getElementById('price').value = closePrice;
                     status.innerText = `成功抓取：${stockId} 價格為 ${closePrice}`;
                     status.className = "text-xs mt-1 text-blue-500 font-bold";
-                    calculate();
+                    
+                    // 抓取成功後，執行計算並更新六成借款
+                    calculate(updateLoan);
                 } else {
-                    // 若今日還沒收盤，嘗試抓取較早的資料
                     status.innerText = '查無今日數據，請手動更新或確認代碼';
                     status.className = "text-xs mt-1 text-red-500";
                 }
@@ -175,13 +240,41 @@
             }
         }
 
+        // 控制更新紀錄開關
+        function toggleLog(show) {
+            const sidebar = document.getElementById('logSidebar');
+            const overlay = document.getElementById('logOverlay');
+            if (show) {
+                sidebar.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // 分享引導功能
+        function showGuide() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '質押發大財計算機',
+                    text: '贏了會館嫩模，輸了下海幹活！',
+                    url: window.location.href
+                }).catch(() => {
+                    document.getElementById('guideModal').classList.remove('hidden');
+                });
+            } else {
+                document.getElementById('guideModal').classList.remove('hidden');
+            }
+        }
+
         // 自動計算
         inputs.forEach(id => {
-            document.getElementById(id).addEventListener('input', calculate);
+            document.getElementById(id).addEventListener('input', () => calculate(false));
         });
 
-        // 初始化
-        calculate();
+        // 初始化 (開啟網頁時先算一次六成)
+        calculate(true);
     </script>
 </body>
 </html>
