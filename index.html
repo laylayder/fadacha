@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>股票質押風險計算機 (含自動取價)</title>
+    <title>質押維持率計算</title>
 
     <link rel="icon" href="./icon.png" type="image/png">
     <link rel="apple-touch-icon" href="./icon.png">
@@ -13,9 +13,18 @@
         /* 背景 */
         body { background-color: #111827; color: #f3f4f6; overflow-x: hidden; }
         /* 卡片 */
-        .card { background: #1f2937; border: 1px solid #374151; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); }
-        /* 輸入框*/
-        input { background-color: #374151 !important; border-color: #4b5563 !important; color: white !important; }
+        .card{ 
+            background: #1f2937; border: 1px solid #374151; 
+            border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); 
+        }
+        
+        /* 輸入框樣式 */
+        input { 
+        background-color: #374151 !important; 
+        border-color: #4b5563 !important; 
+        color: white !important; 
+        text-transform: uppercase; /* 這行會讓輸入的英文自動顯示為大寫 */
+        }
         input:focus { border-color: #3b82f6 !important; ring: 2px #3b82f6; }
         
         /* 側邊欄過渡效果 */
@@ -114,6 +123,7 @@
             <div class="border-l-2 border-blue-500 pl-4">
                 <p class="text-sm font-bold text-white">V2.1 (最新)</p>
                 <p class="text-xs text-gray-400 mt-1">● 新增更新紀錄</p>
+                <p class="text-xs text-gray-400 ">● 股票代號R L 會自動變大寫</p>
                 
             </div>
             <div class="border-l-2 border-gray-600 pl-4">
@@ -199,11 +209,16 @@
 
         // 自動取價功能
         async function fetchPrice(updateLoan = false) {
-            const stockId = document.getElementById('stockName').value.trim();
+            const stockId = document.getElementById('stockName').value.trim().toUpperCase();
+    
+            // toUpperCase 轉成大寫
+            document.getElementById('stockName').value = stockId;
             const btn = document.getElementById('fetchBtn');
             const status = document.getElementById('statusMsg');
+    
+    if (!stockId) return alert('請輸入股票代碼');
+
             
-            if (!stockId) return alert('請輸入股票代碼');
 
             btn.disabled = true;
             btn.innerText = '讀取中...';
