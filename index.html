@@ -29,6 +29,10 @@
         
         /* 側邊欄過渡效果 */
         #logSidebar { transition: transform 0.3s ease-in-out; }
+        
+        /* 股票代碼大小寫轉換 */
+        #stockName {
+        text-transform: uppercase;}
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -47,7 +51,7 @@
                 <div class="relative">
                     <label class="block text-sm font-medium text-blue-300">股票代碼</label>
                     <div class="flex mt-1">
-                        <input type="text" id="stockName" value="006208" inputmode="numeric" 
+                        <input type="text" id="stockName" value="006208" inputmode="text" 
                                class="block w-full border border-gray-300 rounded-l-md p-2 focus:ring-blue-500 focus:border-blue-500"
                                onclick="this.select()">
                         <button onclick="fetchPrice(true)" id="fetchBtn" 
@@ -124,6 +128,7 @@
                 <p class="text-sm font-bold text-white">V2.1 (最新)</p>
                 <p class="text-xs text-gray-400 mt-1">● 新增更新紀錄</p>
                 <p class="text-xs text-gray-400 ">● 股票代號R L 會自動變大寫</p>
+                <p class="text-xs text-gray-400 ">● 原本預設數字鍵 手機會不能打英文 改為文字鍵</p>
                 
             </div>
             <div class="border-l-2 border-gray-600 pl-4">
@@ -209,9 +214,10 @@
 
         // 自動取價功能
         async function fetchPrice(updateLoan = false) {
+            // .toUpperCase() 英文轉大寫
             const stockId = document.getElementById('stockName').value.trim().toUpperCase();
     
-            // toUpperCase 轉成大寫
+            // 把轉完大寫的字再塞回去
             document.getElementById('stockName').value = stockId;
             const btn = document.getElementById('fetchBtn');
             const status = document.getElementById('statusMsg');
