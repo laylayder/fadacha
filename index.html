@@ -3,299 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>質押維持率計算</title>
+    <title>投資風險管理中心</title>
 
     <link rel="icon" href="./icon.png" type="image/png" sizes="192x192">
     <link rel="apple-touch-icon" href="./icon.png" sizes="180x180">
 
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* 背景 */
-        body { background-color: #111827; color: #f3f4f6; overflow-x: hidden; }
-        /* 卡片 */
-        .card{ 
-            background: #1f2937; border: 1px solid #374151; 
-            border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); 
-        }
-        
-        /* 輸入框樣式 */
-        input { 
-        background-color: #374151 !important; 
-        border-color: #4b5563 !important; 
-        color: white !important; 
-        text-transform: uppercase; /* 這行會讓輸入的英文自動顯示為大寫 */
-        }
-        input:focus { border-color: #3b82f6 !important; ring: 2px #3b82f6; }
-        
-        /* 側邊欄過渡效果 */
-        #logSidebar { transition: transform 0.3s ease-in-out; }
-        
-        /* 股票代碼大小寫轉換 */
-        #stockName {
-        text-transform: uppercase;}
-    </style>
+    <script src="theme.js"></script>
 </head>
-<body class="p-4 md:p-8">
-    <div class="max-w-2xl mx-auto">
-        <div class="flex justify-center items-center gap-2 mb-2">
-            <h1 class="text-2xl font-bold text-blue-400 text-center">質押發大財壓力測試計算機V2.1</h1>
-            <button onclick="toggleLog(true)" class="text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 px-2 py-1 rounded border border-gray-500">
-                更新紀錄
-            </button>
-        </div>
-        <h2 class="text-xl font-bold text-blue-400 mb-6 text-center">自動取價待開發 夜班累累</h2>
-        <h2 class="text-xl font-bold text-blue-400 mb-6 text-center">歐印就對了 信心喊話</h2>
+
+<body class="min-h-screen flex items-center justify-center p-4">
+    
+    <!-- 1. 頂部按鈕 -->
+    <div class="fixed top-6 right-6 z-30 flex gap-2">
+        <button id="themeBtn" onclick="toggleTheme()" class="w-10 h-10 flex items-center justify-center rounded-full shadow-sm border border-slate-200 text-lg hover:scale-110 transition-all">
+            🌙
+        </button>
         
-        <div class="card p-6 mb-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="relative">
-                    <label class="block text-sm font-medium text-blue-300">股票代碼</label>
-                    <div class="flex mt-1">
-                        <input type="text" id="stockName" value="006208" inputmode="text" 
-                               class="block w-full border border-gray-300 rounded-l-md p-2 focus:ring-blue-500 focus:border-blue-500"
-                               onclick="this.select()">
-                        <button onclick="fetchPrice(true)" id="fetchBtn" 
-                                class="bg-blue-600 hover:bg-blue-700 text-white px-3 rounded-r-md text-sm transition-all flex items-center active:scale-95 whitespace-nowrap shrink-0">
-                            現價
-                        </button>
+        <button onclick="toggleLog(true)" class="flex items-center gap-2 px-4 py-2 rounded-full shadow-sm border border-slate-200 opacity-80 hover:opacity-100 transition-all active:scale-95">
+            <span class="text-sm font-bold">更新日誌</span>
+        </button>
+    </div>
+
+    <div class="max-w-4xl w-full text-center">
+        <!-- 標題 -->
+        <header class="mb-12">
+            <h1 class="text-4xl font-extrabold mb-2">投資風險管理中心</h1>
+            <p class="opacity-60">掌握資產維持率，贏了會館嫩模</p>
+        </header>
+
+       <!-- 主要功能區域：限制最大寬度為 md (約 448px) -->
+        <div class="max-w-md mx-auto grid grid-cols-2 gap-4 mb-8">
+            
+            <!-- 股票質押入口 (縮小版等邊框) -->
+            <a href="pledge.html" class="glass-card flex flex-col items-center justify-center aspect-square rounded-[1.5rem] group p-3 border border-slate-200/50 dark:border-slate-700/50 transition-all hover:scale-105 active:scale-95 shadow-sm">
+                <div class="w-12 h-12 bg-blue-100/20 text-blue-500 rounded-xl flex items-center justify-center mb-3 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                </div>
+                <h2 class="text-base font-bold mb-0.5">股票質押</h2>
+                <p class="opacity-50 text-[10px]">維持率計算</p>
+            </a>
+
+            <!-- 台指期入口 (縮小版等邊框) -->
+            <a href="twfutures.html" class="glass-card flex flex-col items-center justify-center aspect-square rounded-[1.5rem] group p-3 border border-slate-200/50 dark:border-slate-700/50 transition-all hover:scale-105 active:scale-95 shadow-sm">
+                <div class="w-12 h-12 bg-orange-100/20 text-orange-500 rounded-xl flex items-center justify-center mb-3 group-hover:bg-orange-600 group-hover:text-white transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                </div>
+                <h2 class="text-base font-bold mb-0.5">台指期</h2>
+                <p class="opacity-50 text-[10px]">保證金試算</p>
+            </a>
+
+            <!-- 置底安裝教學 (同樣縮小寬度) -->
+            <div onclick="toggleGuide(true)" class="col-span-2 mx-auto w-full max-w-[280px] mt-2">
+                <div class="glass-card p-2.5 rounded-xl group cursor-pointer border-dashed border border-slate-500/30 hover:border-blue-500/50 transition-all flex items-center gap-3">
+                    <div class="w-8 h-8 bg-slate-100/10 text-slate-400 rounded-lg flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-all shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
                     </div>
-                    <p id="statusMsg" class="text-xs mt-1 text-blue-400">輸入代碼後點擊抓取</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-blue-300">持有張數 (張)</label>
-                    <input type="number" id="shares" value="5" inputmode="numeric" pattern="[0-9]*" class="mt-1 block w-full border border-gray-300 rounded-md p-2" onclick="this.select()">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-blue-300">當前股價 (元)</label>
-                    <input type="number" id="price" value="170" step="0.1" inputmode="decimal" class="mt-1 block w-full border border-gray-300 rounded-md p-2" onclick="this.select()">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-blue-300">借款金額 需小於市值六成(萬元)</label>
-                    <input type="number" id="loanWan" value="20" inputmode="numeric" class="mt-1 block w-full border border-gray-300 rounded-md p-2" onclick="this.select()">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-blue-300">借款利率 (%)</label>
-                    <input type="number" id="rate" value="2.48" step="0.01" inputmode="decimal" class="mt-1 block w-full border border-gray-300 rounded-md p-2" onclick="this.select()">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-blue-300">最低維持率 (%)</label>
-                    <input type="number" id="threshold" value="140" inputmode="numeric" class="mt-1 block w-full border border-gray-300 rounded-md p-2" onclick="this.select()">
+                    <div class="text-left">
+                        <h2 class="text-[11px] font-bold">新增至桌面</h2>
+                        <p class="opacity-40 text-[9px]">快速開啟</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="card p-4 text-center">
-                <p class="text-sm text-blue-500">當前總市值</p>
-                <p id="resMarketValue" class="text-xl font-bold text-blue-600">NT$ 0</p>
+    <!-- 2. 側邊欄遮罩 -->
+    <div id="logOverlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300" onclick="toggleLog(false)"></div>
+
+    <!-- 3. 側邊欄本體 -->
+    <div id="logSidebar" class="fixed top-0 right-0 w-80 h-full z-50 p-8 shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out border-l">
+        <div class="flex justify-between items-center mb-8">
+            <h3 class="text-xl font-bold flex items-center gap-2">
+                <span>📝</span> 更新日誌
+            </h3>
+            <button onclick="toggleLog(false)" class="opacity-50 hover:opacity-100 text-2xl">&times;</button>
+        </div>
+        
+        <div class="space-y-8 overflow-y-auto h-[calc(100%-100px)] pr-2">
+            <!-- V2.2 -->
+            <div class="relative pl-6 border-l-2 border-blue-500">
+                <div class="absolute -left-[6px] top-1 w-2.5 h-2.5 bg-blue-500 rounded-full"></div>
+                <div class="text-xs font-bold opacity-40 uppercase tracking-wider">2026-05-05</div>
+                <div class="text-sm font-bold mt-1">V2.2 全站主題同步</div>
+                <p class="text-xs opacity-60 mt-2 leading-relaxed">支援深淺色模式切換，並優化各分頁視覺一致性，整合安裝教學彈窗。</p>
             </div>
-            <div class="card p-4 text-center">
-                <p class="text-sm text-blue-500">當前維持率</p>
-                <p id="resRatio" class="text-xl font-bold text-green-600">0%</p>
+
+            <!-- V2.1 -->
+            <div class="relative pl-6 border-l-2 border-slate-300">
+                <div class="absolute -left-[6px] top-1 w-2.5 h-2.5 bg-slate-300 rounded-full"></div>
+                <div class="text-xs font-bold opacity-40 uppercase tracking-wider">2026-04-20</div>
+                <div class="text-sm font-bold mt-1">V2.1 輸入優化</div>
+                <p class="text-xs opacity-60 mt-2 leading-relaxed">股票代號自動轉大寫，修正手機端輸入鍵盤類型。</p>
             </div>
-            <div class="card p-4 text-center">
-                <p class="text-sm text-blue-500">年利息費用</p>
-                <p id="resInterest" class="text-xl font-bold text-orange-600">NT$ 0</p>
-            </div>
-            <div class="card p-4 border-2 border-red-200 text-center">
-                <p class="text-sm text-blue-500 text-red-500 font-bold">所需最低股價 (維持率下限)</p>
-                <p id="resCallPrice" class="text-2xl font-black text-red-600">NT$ 0</p>
+
+            <!-- V1.5 -->
+            <div class="relative pl-6 border-l-2 border-slate-300">
+                <div class="absolute -left-[6px] top-1 w-2.5 h-2.5 bg-slate-300 rounded-full"></div>
+                <div class="text-xs font-bold opacity-40 uppercase tracking-wider">2025-12-10</div>
+                <div class="text-sm font-bold mt-1">V1.5 介面翻新</div>
+                <p class="text-xs opacity-60 mt-2 leading-relaxed">串接 FinMind API 抓取現價，導入深色模式介面原型。</p>
             </div>
         </div>
+    </div>
 
-        <div class="mt-6">
-            <button onclick="showGuide()" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2 border border-gray-500 shadow-lg active:scale-95">
-                📲 分享 / 安裝至桌面
+    <!-- 4. 安裝教學彈窗 -->
+    <div id="guideModal" class="fixed inset-0 flex items-center justify-center z-50 hidden p-6 bg-slate-900/60 backdrop-blur-sm" onclick="toggleGuide(false)">
+        <div class="glass-card p-8 max-w-sm w-full text-center space-y-4" onclick="event.stopPropagation()">
+            <h3 class="text-xl font-bold">📲 安裝至手機桌面</h3>
+            <div class="text-left space-y-4 text-sm opacity-80">
+                <p><strong>iOS:</strong> 點擊瀏覽器下方 <span class="text-blue-500 font-bold">「分享箭頭」</span>，選 <span class="text-blue-500 font-bold">「加入主畫面」</span>。</p>
+                <hr class="opacity-10">
+                <p><strong>Android:</strong> 點擊右上角 <span class="text-blue-500 font-bold">「三個點」</span>，選 <span class="text-blue-500 font-bold">「安裝應用程式」</span>。</p>
+            </div>
+            <button onclick="toggleGuide(false)" class="w-full bg-blue-600 text-white py-3 rounded-xl mt-4 font-bold active:scale-95 transition-all">
+                我知道了
             </button>
         </div>
-
-        <div class="mt-6 text-xs text-gray-400 text-center space-y-1">
-            <p>* 數據來源：FinMind 開放 API (收盤價為準) </p>
-            <p>*搞不定 改天試試看 累累*</p>
-            <p>* 下海幹活價公式：(借款金額 × 維持率下限) ÷ 股數</p>
-            <p>* 贏了會館嫩模 輸了下海幹活 *</p>
-        </div>
     </div>
 
-    <div id="logOverlay" class="fixed inset-0 bg-black/60 z-40 hidden" onclick="toggleLog(false)"></div>
-    <div id="logSidebar" class="fixed top-0 right-0 w-64 h-full bg-[#1f2937] z-50 p-6 shadow-2xl transform translate-x-full border-l border-gray-700">
-        <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-bold text-blue-400">更新紀錄</h3>
-            <button onclick="toggleLog(false)" class="text-gray-400 text-2xl">&times;</button>
-        </div>
-        <div class="space-y-6 overflow-y-auto h-[90%]">
-            <div class="border-l-2 border-blue-500 pl-4">
-                <p class="text-sm font-bold text-white">V2.1 (最新)</p>
-                <p class="text-xs text-gray-400 mt-1">● 新增更新紀錄</p>
-                <p class="text-xs text-gray-400 ">● 股票代號R L 會自動變大寫</p>
-                <p class="text-xs text-gray-400 ">● 原本預設數字鍵 手機會不能打英文 改為文字鍵</p>
-                
-            </div>
-            <div class="border-l-2 border-gray-600 pl-4">
-                <p class="text-sm font-bold text-gray-300">V2.0</p>
-                <p class="text-xs text-gray-400 mt-1">● 增加分享功能 假裝自己是App</p>
-                <p class="text-xs text-gray-400">● 加入自動計算六成借款邏輯</p>
-                <p class="text-xs text-gray-400">● 改成張來計算 質押不能用零股</p>
-                <p class="text-xs text-gray-400">● 修正張數(1000股)換算公式</p>
-            </div>
-            <div class="border-l-2 border-gray-600 pl-4">
-                <p class="text-sm font-bold text-gray-300">V1.5</p>
-                <p class="text-xs text-gray-400 mt-1">串接 FinMind API 抓股價 時好時壞 跟人生一樣</p>
-                <p class="text-xs text-gray-400">改成深色模式介面 人生默默的發大財</p>
-                <p class="text-xs text-gray-400">有AI幫忙排版 真方便 希望AI幫我賺大錢</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="guideModal" class="fixed inset-0 flex items-center justify-center z-50 hidden p-6" onclick="this.classList.add('hidden')">
-        <div class="card p-8 max-w-sm w-full text-center space-y-4" onclick="event.stopPropagation()">
-            <h3 class="text-xl font-bold text-blue-400">安裝教學</h3>
-            <div class="text-left space-y-4 text-sm text-gray-300">
-                <p><strong>iPhone (Safari):</strong><br>點擊瀏覽器下方 <span class="text-blue-400">「分享箭頭」</span>，選 <span class="text-white font-bold">「加入主畫面」</span>。</p>
-                <hr class="border-gray-700">
-                <p><strong>Android (Chrome):</strong><br>點擊右上角 <span class="text-blue-400">「三個點」</span>，選 <span class="text-white font-bold">「安裝應用程式」</span> 或新增至主畫面。</p>
-            </div>
-            <button onclick="document.getElementById('guideModal').classList.add('hidden')" class="w-full bg-blue-600 text-white py-2 rounded-lg mt-4 font-bold">我知道了</button>
-        </div>
-    </div>
-
-    <script>
-        const inputs = ['shares', 'price', 'loanWan', 'rate', 'threshold'];
-        
-        /* 核心計算功能*/
-        function calculate(autoUpdateLoan = false) {
-            //張數 
-            const shares = parseFloat(document.getElementById('shares').value) || 0;
-            //股價 
-            const price = parseFloat(document.getElementById('price').value) || 0;
-            
-            //市值 (1張 = 1000股)
-            const marketValue = shares * price * 1000;
-
-            // --- 新增：自動計算六成借款金額 ---
-            if (autoUpdateLoan === true) {
-                const sixtyPercent = Math.floor((marketValue * 0.6) / 10000);
-                document.getElementById('loanWan').value = sixtyPercent;
-            }
-
-            //借貸總額 
-            const loan = (parseFloat(document.getElementById('loanWan').value) || 0) * 10000;
-            //貸款利率 
-            const rate = parseFloat(document.getElementById('rate').value) || 0; //貸款利率
-            //維持率
-            const threshold = (parseFloat(document.getElementById('threshold').value) || 0) / 100; 
-
-            //借貸比例 (維持率)
-            const ratio = loan > 0 ? (marketValue / loan) * 100 : 0;
-            //利息 
-            const interest = loan * (rate / 100);
-            
-            //所需最低價 (修正公式：需考慮 1000 股為一張)
-            const callPrice = (shares > 0 && loan > 0) ? (loan * threshold) / (shares * 1000) : 0; 
-
-            //當前市值 Math.round(marketValue) 四捨五入
-            document.getElementById('resMarketValue').innerText = `NT$ ${Math.round(marketValue).toLocaleString()}`;
-            //當前維持率
-            document.getElementById('resRatio').innerText = `${ratio.toFixed(2)}%`;
-            //年利息
-            document.getElementById('resInterest').innerText = `NT$ ${Math.round(interest).toLocaleString()}`;
-            //所需最低價
-            document.getElementById('resCallPrice').innerText = `NT$ ${callPrice.toFixed(2)}`;
-
-            const ratioEl = document.getElementById('resRatio');
-            if (ratio < 140) {
-                ratioEl.className = "text-xl font-bold text-red-600";
-            } else if (ratio < 160) {
-                ratioEl.className = "text-xl font-bold text-yellow-600";
-            } else {
-                ratioEl.className = "text-xl font-bold text-green-600";
-            }
-        }
-
-        // 自動取價功能
-        async function fetchPrice(updateLoan = false) {
-            // .toUpperCase() 英文轉大寫
-            const stockId = document.getElementById('stockName').value.trim().toUpperCase();
-    
-            // 把轉完大寫的字再塞回去
-            document.getElementById('stockName').value = stockId;
-            const btn = document.getElementById('fetchBtn');
-            const status = document.getElementById('statusMsg');
-    
-    if (!stockId) return alert('請輸入股票代碼');
-
-            
-
-            btn.disabled = true;
-            btn.innerText = '讀取中...';
-            status.innerText = '連線至 FinMind API...';
-
-            try {
-                const today = new Date().toISOString().split('T')[0];
-                const url = `https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id=${stockId}&start_date=${today}`;
-                
-                const response = await fetch(url);
-                const data = await response.json();
-
-                if (data.data && data.data.length > 0) {
-                    const lastData = data.data[data.data.length - 1];
-                    const closePrice = lastData.close;
-                    
-                    document.getElementById('price').value = closePrice;
-                    status.innerText = `成功抓取：${stockId} 價格為 ${closePrice}`;
-                    status.className = "text-xs mt-1 text-blue-500 font-bold";
-                    
-                    // 抓取成功後，執行計算並更新六成借款
-                    calculate(updateLoan);
-                } else {
-                    status.innerText = '查無今日數據，請手動更新或確認代碼';
-                    status.className = "text-xs mt-1 text-red-500";
-                }
-            } catch (error) {
-                console.error(error);
-                status.innerText = '抓取失敗，請確認代碼或網路';
-                status.className = "text-xs mt-1 text-red-500";
-            } finally {
-                btn.disabled = false;
-                btn.innerText = '現價';
-            }
-        }
-
-        // 控制更新紀錄開關
-        function toggleLog(show) {
-            const sidebar = document.getElementById('logSidebar');
-            const overlay = document.getElementById('logOverlay');
-            if (show) {
-                sidebar.classList.remove('translate-x-full');
-                overlay.classList.remove('hidden');
-            } else {
-                sidebar.classList.add('translate-x-full');
-                overlay.classList.add('hidden');
-            }
-        }
-
-        // 分享引導功能
-        function showGuide() {
-            if (navigator.share) {
-                navigator.share({
-                    title: '質押發大財計算機',
-                    text: '贏了會館嫩模，輸了下海幹活！',
-                    url: window.location.href
-                }).catch(() => {
-                    document.getElementById('guideModal').classList.remove('hidden');
-                });
-            } else {
-                document.getElementById('guideModal').classList.remove('hidden');
-            }
-        }
-
-        // 自動計算
-        inputs.forEach(id => {
-            document.getElementById(id).addEventListener('input', () => calculate(false));
-        });
-
-        // 初始化 (開啟網頁時先算一次六成)
-        calculate(true);
-    </script>
 </body>
 </html>
