@@ -84,7 +84,7 @@
       </div>
 
       <div id="spanel-manual" style="display:none;margin-top:12px">
-        <div class="manual-grid">
+        <div class="manual-grid" style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));">
           <div class="input-group">
             <span class="input-label">原始保證金（每口）</span>
             <div class="input-row">
@@ -96,13 +96,6 @@
             <span class="input-label">維持保證金（每口）</span>
             <div class="input-row">
               <input type="number" id="m-maint" value="77000" step="1000" oninput="calc()" />
-              <span class="input-unit">元</span>
-            </div>
-          </div>
-          <div class="input-group">
-            <span class="input-label">結算保證金（每口）</span>
-            <div class="input-row">
-              <input type="number" id="m-settle" value="75000" step="1000" oninput="calc()" />
               <span class="input-unit">元</span>
             </div>
           </div>
@@ -170,7 +163,7 @@
       <span id="status-tag" class="status-tag success">健康</span>
     </div>
 
-    <div class="metrics-3">
+    <div class="metrics-2">
       <div class="metric-cell">
         <div class="metric-cell-label">原始保證金（總）</div>
         <div class="metric-cell-value" id="r-init">—</div>
@@ -178,10 +171,6 @@
       <div class="metric-cell">
         <div class="metric-cell-label">維持保證金（總）</div>
         <div class="metric-cell-value" id="r-maint">—</div>
-      </div>
-      <div class="metric-cell">
-        <div class="metric-cell-label">結算保證金（總）</div>
-        <div class="metric-cell-value" id="r-settle">—</div>
       </div>
     </div>
 
@@ -212,34 +201,36 @@
   </div>
 
   <div class="card" id="ref-index-card">
+    <div class="card" id="ref-index-card">
     <div class="section-label">保證金參考表（每口）</div>
-    <table class="ref-table">
+    <table class="ref-table" style="width: 100%; border-collapse: collapse; table-layout: fixed;">
+      <colgroup>
+        <col style="width: 50%;">
+        <col style="width: 25%;">
+        <col style="width: 25%;">
+      </colgroup>
       <thead>
         <tr>
-          <th>合約</th>
-          <th class="text-right">結算保證金</th>
-          <th class="text-right">維持保證金</th>
-          <th class="text-right">原始保證金</th>
+          <th style="text-align: left; padding-left: 8px;">合約</th>
+          <th style="text-align: center;">維持保證金</th>
+          <th style="text-align: center;">原始保證金</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>大台指 TX</td>
-          <td class="text-right">389,000</td>
-          <td class="text-right">403,000</td>
-          <td class="text-right">526,000</td>
+          <td style="text-align: left; padding-left: 8px;">大台指 TX</td>
+          <td style="text-align: center;">403,000</td>
+          <td style="text-align: center;">526,000</td>
         </tr>
         <tr>
-          <td>小台指 MTX</td>
-          <td class="text-right">97,250</td>
-          <td class="text-right">100,750</td>
-          <td class="text-right">131,500</td>
+          <td style="text-align: left; padding-left: 8px;">小台指 MTX</td>
+          <td style="text-align: center;">100,750</td>
+          <td style="text-align: center;">131,500</td>
         </tr>
         <tr>
-          <td>微型台指 IMT</td>
-          <td class="text-right">19,450</td>
-          <td class="text-right">20,150</td>
-          <td class="text-right">26,300</td>
+          <td style="text-align: left; padding-left: 8px;">微型台指 IMT</td>
+          <td style="text-align: center;">20,150</td>
+          <td style="text-align: center;">26,300</td>
         </tr>
       </tbody>
     </table>
@@ -247,27 +238,42 @@
 
   <div class="card" id="ref-stock-card" style="display:none">
     <div class="section-label">個股期保證金級距（每口）</div>
-    <table class="ref-table">
+    <table class="ref-table" style="width: 100%; border-collapse: collapse; table-layout: fixed;">
+      <colgroup>
+        <col style="width: 50%;">
+        <col style="width: 25%;">
+        <col style="width: 25%;">
+      </colgroup>
       <thead>
         <tr>
-          <th>級距</th>
-          <th class="text-right">結算保證金</th>
-          <th class="text-right">維持保證金</th>
-          <th class="text-right">原始保證金</th>
+          <th style="text-align: left; padding-left: 8px;">級距</th>
+          <th style="text-align: center;">維持保證金</th>
+          <th style="text-align: center;">原始保證金</th>
         </tr>
       </thead>
       <tbody>
-        <tr><td>級距 1</td><td class="text-right">10.00%</td><td class="text-right">10.35%</td><td class="text-right">13.50%</td></tr>
-        <tr><td>級距 2</td><td class="text-right">12.00%</td><td class="text-right">12.42%</td><td class="text-right">16.20%</td></tr>
-        <tr><td>級距 3</td><td class="text-right">15.00%</td><td class="text-right">15.53%</td><td class="text-right">20.25%</td></tr>
+        <tr>
+          <td style="text-align: left; padding-left: 8px;">級距 1</td>
+          <td style="text-align: center;">10.35%</td>
+          <td style="text-align: center;">13.50%</td>
+        </tr>
+        <tr>
+          <td style="text-align: left; padding-left: 8px;">級距 2</td>
+          <td style="text-align: center;">12.42%</td>
+          <td style="text-align: center;">16.20%</td>
+        </tr>
+        <tr>
+          <td style="text-align: left; padding-left: 8px;">級距 3</td>
+          <td style="text-align: center;">15.53%</td>
+          <td style="text-align: center;">20.25%</td>
+        </tr>
       </tbody>
+    </table>
     </table>
     <p class="hint" style="margin-top:8px">公式：保證金 = 股價 × 契約乘數 × 適用比例　・　資料來源：<a href="https://www.taifex.com.tw/cht/5/margingReqSSF" target="_blank" style="color:var(--color-blue)">台灣期交所</a></p>
   </div>
 </div>
 
 <script src="marginitem.js"></script>
-</body>
-</html>
 </body>
 </html>

@@ -4,16 +4,16 @@
     資料
 ════════════════════════════════════ */
 const INDEX_CONTRACTS = {
-  big:   { multiplier: 200, initPerLot: 526000, maintPerLot: 403000, settlePerLot: 389000 },
-  small: { multiplier: 50,  initPerLot: 131500, maintPerLot: 100750, settlePerLot: 97250  },
-  micro: { multiplier: 10,  initPerLot: 26300,  maintPerLot: 20150,  settlePerLot: 19450  }
+  big:   { multiplier: 200, initPerLot: 526000, maintPerLot: 403000 },
+  small: { multiplier: 50,  initPerLot: 131500, maintPerLot: 100750 },
+  micro: { multiplier: 10,  initPerLot: 26300,  maintPerLot: 20150  }
 };
 
 // 個股期保證金級距比例
 const TIERS = {
-  1: { settle: 0.10,   maint: 0.1035, init: 0.135  },
-  2: { settle: 0.12,   maint: 0.1242, init: 0.162  },
-  3: { settle: 0.15,   maint: 0.1553, init: 0.2025 }
+  1: { maint: 0.1035, init: 0.135  },
+  2: { maint: 0.1242, init: 0.162  },
+  3: { maint: 0.1553, init: 0.2025 }
 };
 
 const STOCKS = [
@@ -259,7 +259,6 @@ function getMarginsAndMultiplier(entry, current) {
     return { 
       init: c.initPerLot, 
       maint: c.maintPerLot, 
-      settle: c.settlePerLot, 
       mult: c.multiplier 
     };
   }
@@ -272,7 +271,6 @@ function getMarginsAndMultiplier(entry, current) {
     return {
       init:   Math.round(entry * s.mult * t.init),
       maint:  Math.round(activeCurrentPrice * s.mult * t.maint),
-      settle: Math.round(activeCurrentPrice * s.mult * t.settle),
       mult:   s.mult
     };
   }
@@ -280,7 +278,6 @@ function getMarginsAndMultiplier(entry, current) {
   return {
     init:   parseFloat(document.getElementById('m-init').value)   || 0,
     maint:  parseFloat(document.getElementById('m-maint').value)  || 0,
-    settle: parseFloat(document.getElementById('m-settle').value) || 0,
     mult:   parseInt(document.getElementById('m-mult').value)     || 2000
   };
 }
@@ -307,7 +304,6 @@ function calc() {
 
   const initTotal   = m.init   * qty;
   const maintTotal  = m.maint  * qty;
-  const settleTotal = m.settle * qty;
   
   const diff = direction === 'long' ? (current - entry) : (entry - current);
   const pnl  = diff * m.mult * qty;
@@ -317,7 +313,6 @@ function calc() {
 
   document.getElementById('r-init').textContent   = fmt(initTotal)   + ' 元';
   document.getElementById('r-maint').textContent  = fmt(maintTotal)  + ' 元';
-  document.getElementById('r-settle').textContent = fmt(settleTotal) + ' 元';
 
   const pnlEl = document.getElementById('r-pnl');
   pnlEl.textContent = (pnl >= 0 ? '+' : '') + fmt(pnl) + ' 元';
