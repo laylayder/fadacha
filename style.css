@@ -1,0 +1,149 @@
+/* --- 基礎變數與模式設定 --- */
+:root {
+    --bg-body: #f8fafc;
+    --bg-card: #ffffff;
+    --text-main: #1e293b;
+    --text-sub: #64748b;
+    --border-color: #e2e8f0;
+    --accent-blue: #3b82f6;
+}
+
+[data-theme="dark"] {
+    --bg-body: #111827;
+    --bg-card: #1f2937;
+    --text-main: #f3f4f6;
+    --text-sub: #9ca3af;
+    --border-color: #374151;
+    --accent-blue: #60a5fa;
+}
+
+/* --- 全域樣式 --- */
+body {
+    background-color: var(--bg-body) !important;
+    color: var(--text-main) !important;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+}
+
+/* 強制所有帶有變數需求的文字變色 */
+h1, h2, h3, h4, .text-slate-800 {
+    color: var(--text-main) !important;
+}
+
+p, .text-slate-500 {
+    color: var(--text-sub) !important;
+}
+
+/* --- 共通組件：卡片 --- */
+.glass-card, #logSidebar {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-main) !important;
+}
+
+/* --- 共通組件：按鈕與側邊欄 --- */
+
+/* 回到首頁按鈕 */
+.back-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    color: var(--text-sub) !important;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    transition: all 0.2s ease;
+}
+
+.back-home:hover {
+    color: var(--accent-blue) !important;
+    transform: translateX(-3px);
+}
+
+/* 頂部按鈕容器 */
+.theme-toggle-container {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    z-index: 50;
+    display: flex;
+    gap: 0.75rem;
+}
+
+/* 通用圖示按鈕樣式 */
+.icon-btn, #themeBtn, [onclick="toggleLog(true)"] {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-main) !important;
+    transition: all 0.2s;
+}
+
+/* 3. 側邊欄 (更新日誌) */
+#logSidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 320px;
+    height: 100%;
+    z-index: 100;
+    padding: 2rem;
+    box-shadow: -10px 0 15px -3px rgba(0, 0, 0, 0.1);
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#logSidebar.show {
+    transform: translateX(0);
+}
+
+/* 4. 遮罩層 */
+#logOverlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5); 
+    backdrop-filter: blur(4px);
+    z-index: 90;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#logOverlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/* 日誌內部的線條適配 */
+.border-l-2 {
+    border-color: var(--border-color) !important;
+}
+.border-blue-500 {
+    border-color: var(--accent-blue) !important;
+}
+
+
+
+/* 質押網頁用 */
+input {
+    background-color: var(--bg-body) !important; /* 跟隨背景色 */
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-main) !important;
+    text-transform: uppercase;
+}
+
+input:focus {
+    border-color: var(--accent-blue) !important;
+    box-shadow: 0 0 0 2px var(--accent-blue) !important;
+    outline: none;
+}
+
+/* 讓結果數據更顯眼 */
+#resMarketValue, #resInterest {
+    color: var(--accent-blue) !important;
+}
+
+/* 下海價永遠維持紅色 (警示作用) */
+#resCallPrice {
+    color: #ef4444 !important;
+}

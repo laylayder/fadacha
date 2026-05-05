@@ -1,0 +1,406 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* 預設淺色模式變數 */
+:root {
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
+  --color-bg: #f5f5f7;
+  --color-surface: #ffffff;
+  --color-surface-2: #f2f2f7;
+  --color-border: #d1d1d6;
+  --color-border-light: #e5e5ea;
+  --color-text: #1c1c1e;
+  --color-text-sub: #6e6e73;
+  --color-text-hint: #aeaeb2;
+  --color-blue: #378ADD;
+  --color-blue-bg: #EAF3FC;
+  --color-green: #34C759;
+  --color-green-bg: #E9F9EE;
+  --color-green-text: #1A7A34;
+  --color-orange: #FF9500;
+  --color-orange-bg: #FFF3E0;
+  --color-orange-text: #8A5200;
+  --color-red: #FF3B30;
+  --color-red-bg: #FFEBEA;
+  --color-red-text: #A32D2D;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+/* 當 html 標籤有 .dark class 時切換為深色模式 */
+html.dark {
+  --color-bg: #0f172a;
+  --color-surface: #1e293b;
+  --color-surface-2: #334155;
+  --color-border: #475569;
+  --color-border-light: #334155;
+  --color-text: #f8fafc;
+  --color-text-sub: #94a3b8;
+  --color-text-hint: #64748b;
+  --color-blue-bg: rgba(55, 138, 221, 0.15);
+  --shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+/* 針對深色模式下的輸入框特別微調 */
+html.dark .input-row input {
+  background-color: #0f172a !important;
+  border: 1.5px solid #334155 !important;
+  color: #f8fafc !important;
+}
+
+html.dark .input-row input:focus {
+  background-color: #0f172a !important;
+  border-color: var(--color-blue) !important;
+}
+
+
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1rem 4rem;
+}
+
+.container {
+  width: 100%;
+  max-width: 680px;
+}
+
+/* 回到首頁按鈕 */
+.back-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: var(--color-text-sub);
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  transition: color 0.2s;
+}
+
+.back-home:hover {
+  color: var(--color-blue);
+}
+
+.back-home svg {
+  width: 18px;
+  height: 18px;
+}
+
+header {
+  margin-bottom: 2rem;
+}
+
+header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+header p {
+  font-size: 14px;
+  color: var(--color-text-sub);
+  margin-top: 4px;
+}
+
+.card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow);
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-hint);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+/* 合約卡片 */
+.contract-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.contract-card {
+  border: 1.5px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  user-select: none;
+}
+
+.contract-card:hover:not(.active) {
+  border-color: var(--color-border);
+  background: var(--color-surface-2);
+}
+
+.contract-card.active {
+  border: 2px solid var(--color-blue);
+  background: var(--color-blue-bg);
+}
+
+.contract-name {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.contract-code {
+  font-size: 12px;
+  color: var(--color-text-sub);
+  margin-bottom: 8px;
+}
+
+.badge {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: var(--color-surface-2);
+  color: var(--color-text-sub);
+  border: 0.5px solid var(--color-border-light);
+}
+
+/* 交易方向切換 */
+.direction-toggle {
+  display: flex;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  width: fit-content;
+}
+
+.dir-btn {
+  padding: 8px 32px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--color-text-sub);
+  transition: background 0.15s, color 0.15s;
+  font-family: var(--font-sans);
+}
+
+.dir-btn.long.active  { background: #E24B4A; color: #fff; }
+.dir-btn.short.active { background: #185FA5; color: #fff; }
+.dir-btn:not(.active):hover { background: var(--color-surface-2); color: var(--color-text); }
+
+/* 輸入區域 */
+.input-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-label {
+  font-size: 13px;
+  color: var(--color-text-sub);
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.input-row input {
+  flex: 1;
+  padding: 9px 12px;
+  font-size: 15px;
+  font-family: var(--font-sans);
+  background-color: #f7f8f9 !important; 
+  border: 1.5px solid #f7f8f9 !important; 
+  color: rgb(10, 10, 10) !important; 
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+  -moz-appearance: textfield;
+}
+
+.input-row input:focus {
+  background-color: #ffffff !important;
+  border-color: var(--color-blue) !important;
+  box-shadow: 0 0 0 2px rgba(55, 138, 221, 0.2) !important; 
+}
+
+.input-row input::-webkit-inner-spin-button,
+.input-row input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+.input-unit {
+  font-size: 13px;
+  color: var(--color-text-sub);
+  min-width: 24px;
+}
+
+/* 結果與數據 */
+.status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.status-title {
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dir-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 20px;
+}
+.dir-badge.long  { background: #FCEBEB; color: #A32D2D; }
+.dir-badge.short { background: #E6F1FB; color: #185FA5; }
+
+.status-tag {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 12px;
+  border-radius: 20px;
+}
+.status-tag.success { background: var(--color-green-bg); color: var(--color-green-text); }
+.status-tag.warning { background: var(--color-orange-bg); color: var(--color-orange-text); }
+.status-tag.danger  { background: var(--color-red-bg);    color: var(--color-red-text);    }
+
+.metrics-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.metrics-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 1.25rem;
+}
+
+.metric-cell {
+  background: var(--color-surface-2);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+}
+
+.metric-cell-label {
+  font-size: 11px;
+  color: var(--color-text-sub);
+  margin-bottom: 6px;
+}
+
+.metric-cell-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.metric-cell-value.success { color: var(--color-green-text); }
+.metric-cell-value.danger  { color: var(--color-red-text); }
+.metric-cell-value.warning { color: var(--color-orange-text); }
+.metric-cell-value.big { font-size: 26px; }
+
+/* 進度條 */
+.bar-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--color-text-sub);
+  margin-bottom: 6px;
+}
+
+.bar-track {
+  height: 10px;
+  background: var(--color-surface-2);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.35s ease, background 0.35s;
+}
+
+.bar-foot {
+  position: relative;
+  height: 18px;
+  margin-top: 4px;
+}
+
+.bar-marker {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: var(--color-text-hint);
+  white-space: nowrap;
+}
+
+/* 訊息框 */
+.info-box {
+  background: var(--color-surface-2);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--color-text-sub);
+  line-height: 1.65;
+  margin-top: 1rem;
+}
+
+.info-box strong { color: var(--color-text); font-weight: 600; }
+
+/* 參考表 */
+.ref-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.ref-table th {
+  text-align: left;
+  color: var(--color-text-sub);
+  font-weight: 500;
+  padding: 6px 10px 6px 0;
+  border-bottom: 1px solid var(--color-border-light);
+  font-size: 12px;
+}
+
+.ref-table td {
+  padding: 8px 10px 8px 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.ref-table tr:last-child td { border-bottom: none; }
+
+.text-right { text-align: right; }
+
+@media (max-width: 480px) {
+  .contract-grid { grid-template-columns: 1fr; }
+  .metrics-3 { grid-template-columns: 1fr 1fr; }
+  .input-grid { grid-template-columns: 1fr; }
+}

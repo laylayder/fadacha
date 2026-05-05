@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>質押維持率計算</title>
+
+    <link rel="icon" href="./icon.png" type="image/png" sizes="192x192">
+    <link rel="apple-touch-icon" href="./icon.png" sizes="180x180">
+
+    <!-- 核心樣式與邏輯引用 -->
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="theme.js"></script>
+</head>
+
+<body class="p-4 md:p-8">
+    <div class="max-w-2xl mx-auto">
+        <!-- 返回按鈕 (樣式由 style.css 控制) -->
+        <a href="index.html" class="back-home">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            返回導覽頁面
+        </a>
+
+        <header class="mb-6 text-center">
+            <h2 class="text-xl font-bold mb-1">歐印就對了 信心喊話</h2>
+            <p class="text-xs opacity-60">贏了會館嫩模 輸了下海幹活</p>
+        </header>
+        
+        <!-- 主要輸入區 -->
+        <div class="glass-card p-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="relative">
+                    <label class="block text-sm font-medium opacity-80">股票代碼</label>
+                    <div class="flex mt-1">
+                        <input type="text" id="stockName" value="006208" inputmode="text" 
+                               class="block w-full rounded-l-md p-2"
+                               onclick="this.select()">
+                        <button onclick="fetchPrice(true)" id="fetchBtn" 
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 rounded-r-md text-sm transition-all flex items-center active:scale-95 whitespace-nowrap shrink-0">
+                            抓取
+                        </button>
+                    </div>
+                    <p id="statusMsg" class="text-xs mt-1">輸入後點擊抓取現價</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium opacity-80">持有張數 (張)</label>
+                    <input type="number" id="shares" value="5" inputmode="numeric" class="mt-1 block w-full rounded-md p-2" onclick="this.select()">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium opacity-80">當前股價 (元)</label>
+                    <input type="number" id="price" value="170" step="0.1" inputmode="decimal" class="mt-1 block w-full rounded-md p-2" onclick="this.select()">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium opacity-80">借款金額 (萬元)</label>
+                    <input type="number" id="loanWan" value="20" inputmode="numeric" class="mt-1 block w-full rounded-md p-2" onclick="this.select()">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium opacity-80">借款利率 (%)</label>
+                    <input type="number" id="rate" value="2.48" step="0.01" inputmode="decimal" class="mt-1 block w-full rounded-md p-2" onclick="this.select()">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium opacity-80">最低維持率 (%)</label>
+                    <input type="number" id="threshold" value="140" inputmode="numeric" class="mt-1 block w-full rounded-md p-2" onclick="this.select()">
+                </div>
+            </div>
+        </div>
+
+        <!-- 結果顯示區 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="glass-card p-4 text-center">
+                <p class="text-sm opacity-70">當前總市值</p>
+                <p id="resMarketValue" class="text-xl font-bold">NT$ 0</p>
+            </div>
+            <div class="glass-card p-4 text-center">
+                <p class="text-sm opacity-70">當前維持率</p>
+                <p id="resRatio" class="text-xl font-bold">0%</p>
+            </div>
+            <div class="glass-card p-4 text-center">
+                <p class="text-sm opacity-70">年利息費用</p>
+                <p id="resInterest" class="text-xl font-bold">NT$ 0</p>
+            </div>
+            <div class="glass-card p-4 border-2 border-red-500/50 text-center">
+                <p class="text-sm text-red-500 font-bold">維持率下限股價 (下海價)</p>
+                <p id="resCallPrice" class="text-2xl font-black text-red-600">NT$ 0</p>
+            </div>
+        </div>
+
+
+        <footer class="mt-8 text-[10px] opacity-40 text-center space-y-1">
+            <p>* 數據來源：FinMind API (自動換算 1000 股/張)</p>
+            <p>* 僅供參考，投資前請衡量自身風險承受能力</p>
+        </footer>
+    </div>
+
+    
+
+    <script>
+        const inputs = ['shares', 'price', 'loanWan', 'rate', 'threshold'];
+        
+        function calculate(autoUpdateLoan = false) {
+            const shares = parseFloat(document.getElementById('shares').value) || 0;
+            const price = parseFloat(document.getElementById('price').value) || 0;
+            const marketValue = shares * price * 1000;
+
+            if (autoUpdateLoan === true) {
+                const sixtyPercent = Math.floor((marketValue * 0.6) / 10000);
+                document.getElementById('loanWan').value = sixtyPercent;
+            }
+
+            const loan = (parseFloat(document.getElementById('loanWan').value) || 0) * 10000;
+            const rate = parseFloat(document.getElementById('rate').value) || 0;
+            const threshold = (parseFloat(document.getElementById('threshold').value) || 0) / 100; 
+
+            const ratio = loan > 0 ? (marketValue / loan) * 100 : 0;
+            const interest = loan * (rate / 100);
+            const callPrice = (shares > 0 && loan > 0) ? (loan * threshold) / (shares * 1000) : 0; 
+
+            document.getElementById('resMarketValue').innerText = `NT$ ${Math.round(marketValue).toLocaleString()}`;
+            document.getElementById('resRatio').innerText = `${ratio.toFixed(2)}%`;
+            document.getElementById('resInterest').innerText = `NT$ ${Math.round(interest).toLocaleString()}`;
+            document.getElementById('resCallPrice').innerText = `NT$ ${callPrice.toFixed(2)}`;
+
+            const ratioEl = document.getElementById('resRatio');
+            ratioEl.className = "text-xl font-bold " + (ratio < 140 ? "text-red-600" : ratio < 160 ? "text-yellow-600" : "text-green-600");
+        }
+
+        async function fetchPrice(updateLoan = false) {
+            const stockId = document.getElementById('stockName').value.trim().toUpperCase();
+            document.getElementById('stockName').value = stockId;
+            const btn = document.getElementById('fetchBtn');
+            const status = document.getElementById('statusMsg');
+    
+            if (!stockId) return alert('請輸入股票代碼');
+
+            btn.disabled = true;
+            btn.innerText = '...';
+
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                const url = `https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id=${stockId}&start_date=${today}`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.data && data.data.length > 0) {
+                    const closePrice = data.data[data.data.length - 1].close;
+                    document.getElementById('price').value = closePrice;
+                    status.innerText = `現價: ${closePrice}`;
+                    calculate(updateLoan);
+                } else {
+                    status.innerText = '無今日數據';
+                }
+            } catch (error) {
+                status.innerText = '抓取失敗';
+            } finally {
+                btn.disabled = false;
+                btn.innerText = '抓取';
+            }
+        }
+
+        function showGuide() {
+            if (navigator.share) {
+                navigator.share({ title: '投資風險管理', url: window.location.href });
+            } else {
+                document.getElementById('guideModal').classList.remove('hidden');
+            }
+        }
+
+        inputs.forEach(id => {
+            document.getElementById(id).addEventListener('input', () => calculate(false));
+        });
+
+        calculate(true);
+    </script>
+</body>
+</html>

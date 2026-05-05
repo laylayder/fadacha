@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>台灣期貨維持率計算機</title>
+  
+  <script>
+    // 檢查 localStorage 或系統偏好設定
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  </script>
+
+  <link rel="stylesheet" href="style_futures.css">
+</head>
+</head>
+<body>
+<div class="container">
+  <a href="index.html" class="back-home">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+    </svg>
+    返回首頁
+  </a>
+
+  <header>
+    <h1>台灣期貨維持率計算機</h1>
+    <p>大台指・小台指・微型台指　保證金與維持率試算</p>
+  </header>
+
+  <!-- Contract selection -->
+  <div class="card">
+    <div class="section-label">選擇合約</div>
+    <div class="contract-grid">
+      <div class="contract-card active" id="card-big" onclick="selectContract('big')">
+        <div class="contract-name">大台指</div>
+        <div class="contract-code">TX · 每點 200 元</div>
+        <span class="badge">原始 526,000</span>
+      </div>
+      <div class="contract-card" id="card-small" onclick="selectContract('small')">
+        <div class="contract-name">小台指</div>
+        <div class="contract-code">MTX · 每點 50 元</div>
+        <span class="badge">原始 131,500</span>
+      </div>
+      <div class="contract-card" id="card-micro" onclick="selectContract('micro')">
+        <div class="contract-name">微型台指</div>
+        <div class="contract-code">IMT · 每點 10 元</div>
+        <span class="badge">原始 26,300</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Direction -->
+  <div class="card">
+    <div class="section-label">交易方向</div>
+    <div class="direction-toggle">
+      <button class="dir-btn long active" id="btn-long" onclick="selectDir('long')">做多 ▲</button>
+      <button class="dir-btn short" id="btn-short" onclick="selectDir('short')">放空 ▼</button>
+    </div>
+  </div>
+
+  <!-- Inputs -->
+  <div class="card">
+    <div class="section-label">輸入參數</div>
+    <div class="input-grid">
+      <div class="input-group">
+        <span class="input-label">口數</span>
+        <div class="input-row">
+          <input type="number" id="qty" value="1" min="1" max="100" step="1" oninput="calc()" />
+          <span class="input-unit">口</span>
+        </div>
+      </div>
+      <div class="input-group">
+        <span class="input-label">帳戶權益數</span>
+        <div class="input-row">
+          <input type="number" id="equity" value="600000" step="1000" oninput="calc()" />
+          <span class="input-unit">元</span>
+        </div>
+      </div>
+      <div class="input-group">
+        <span class="input-label">成交點位</span>
+        <div class="input-row">
+          <input type="number" id="entryPrice" value="41000" step="1" oninput="calc()" />
+          <span class="input-unit">點</span>
+        </div>
+      </div>
+      <div class="input-group">
+        <span class="input-label">目前點位</span>
+        <div class="input-row">
+          <input type="number" id="currentPrice" value="39000" step="1" oninput="calc()" />
+          <span class="input-unit">點</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="card">
+    <div class="status-row">
+      <span class="status-title">
+        計算結果
+        <span id="dir-badge" class="dir-badge long">做多</span>
+      </span>
+      <span id="status-tag" class="status-tag success">健康</span>
+    </div>
+
+    <div class="metrics-3">
+      <div class="metric-cell">
+        <div class="metric-cell-label">原始保證金（總）</div>
+        <div class="metric-cell-value" id="r-init">—</div>
+      </div>
+      <div class="metric-cell">
+        <div class="metric-cell-label">維持保證金（總）</div>
+        <div class="metric-cell-value" id="r-maint">—</div>
+      </div>
+      <div class="metric-cell">
+        <div class="metric-cell-label">結算保證金（總）</div>
+        <div class="metric-cell-value" id="r-settle">—</div>
+      </div>
+    </div>
+
+    <div class="metrics-2">
+      <div class="metric-cell">
+        <div class="metric-cell-label">未實現損益</div>
+        <div class="metric-cell-value" id="r-pnl">—</div>
+      </div>
+      <div class="metric-cell">
+        <div class="metric-cell-label">維持率</div>
+        <div class="metric-cell-value big" id="r-ratio">—</div>
+      </div>
+    </div>
+
+    <div class="bar-header">
+      <span>0%</span>
+      <span id="bar-label">維持率進度</span>
+      <span>200%+</span>
+    </div>
+    <div class="bar-track">
+      <div class="bar-fill" id="ratio-bar" style="width:0%;"></div>
+    </div>
+    <div class="bar-foot">
+      <span class="bar-marker" style="left:50%;">100% 追繳線</span>
+    </div>
+
+    <div class="info-box" id="info-box"></div>
+  </div>
+
+  <!-- Reference table -->
+  <div class="card">
+    <div class="section-label">保證金參考表（每口）</div>
+    <table class="ref-table">
+      <thead>
+        <tr>
+          <th>合約</th>
+          <th class="text-right">結算保證金</th>
+          <th class="text-right">維持保證金</th>
+          <th class="text-right">原始保證金</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>大台指 TX</td>
+          <td class="text-right">389,000</td>
+          <td class="text-right">403,000</td>
+          <td class="text-right">526,000</td>
+        </tr>
+        <tr>
+          <td>小台指 MTX</td>
+          <td class="text-right">97,250</td>
+          <td class="text-right">100,750</td>
+          <td class="text-right">131,500</td>
+        </tr>
+        <tr>
+          <td>微型台指 IMT</td>
+          <td class="text-right">19,450</td>
+          <td class="text-right">20,150</td>
+          <td class="text-right">26,300</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  // 保持原有邏輯
+  const CONTRACTS = {
+    big:   { multiplier: 200, initPerLot: 526000, maintPerLot: 403000, settlePerLot: 389000 },
+    small: { multiplier: 50,  initPerLot: 131500, maintPerLot: 100750, settlePerLot: 97250  },
+    micro: { multiplier: 10,  initPerLot: 26300,  maintPerLot: 20150,  settlePerLot: 19450  }
+  };
+
+  let selectedContract = 'big';
+  let direction = 'long';
+
+  function selectContract(key) {
+    selectedContract = key;
+    ['big', 'small', 'micro'].forEach(k => {
+      document.getElementById('card-' + k).classList.toggle('active', k === key);
+    });
+    calc();
+  }
+
+  function selectDir(d) {
+    direction = d;
+    document.getElementById('btn-long').classList.toggle('active', d === 'long');
+    document.getElementById('btn-short').classList.toggle('active', d === 'short');
+    const badge = document.getElementById('dir-badge');
+    badge.textContent = d === 'long' ? '做多' : '放空';
+    badge.className = 'dir-badge ' + d;
+    calc();
+  }
+
+  function fmt(n) {
+    return Math.round(n).toLocaleString('zh-TW');
+  }
+
+  function calc() {
+    const c = CONTRACTS[selectedContract];
+    const qty = Math.max(1, parseInt(document.getElementById('qty').value) || 1);
+    const equity = parseFloat(document.getElementById('equity').value) || 0;
+    const entry = parseFloat(document.getElementById('entryPrice').value) || 0;
+    const current = parseFloat(document.getElementById('currentPrice').value) || 0;
+
+    const initTotal = c.initPerLot * qty;
+    const maintTotal = c.maintPerLot * qty;
+    const settleTotal = c.settlePerLot * qty;
+    const diff = direction === 'long' ? (current - entry) : (entry - current);
+    const pnl = diff * c.multiplier * qty;
+    const effectiveEquity = equity + pnl;
+    const ratio = maintTotal > 0 ? (effectiveEquity / maintTotal) * 100 : 0;
+
+    document.getElementById('r-init').textContent = fmt(initTotal) + ' 元';
+    document.getElementById('r-maint').textContent = fmt(maintTotal) + ' 元';
+    document.getElementById('r-settle').textContent = fmt(settleTotal) + ' 元';
+
+    const pnlEl = document.getElementById('r-pnl');
+    pnlEl.textContent = (pnl >= 0 ? '+' : '') + fmt(pnl) + ' 元';
+    pnlEl.className = 'metric-cell-value ' + (pnl > 0 ? 'success' : pnl < 0 ? 'danger' : '');
+
+    const ratioEl = document.getElementById('r-ratio');
+    ratioEl.textContent = ratio.toFixed(1) + '%';
+
+    let statusClass, statusText, barColor, infoText;
+    const dirLabel = direction === 'long' ? '做多' : '放空';
+
+    if (ratio >= 130) {
+      statusClass = 'success'; statusText = '健康'; barColor = '#34C759';
+      infoText = `<strong>${dirLabel}部位安全。</strong> 維持率 <strong>${ratio.toFixed(1)}%</strong>，高於追繳線，有效權益 ${fmt(effectiveEquity)} 元。`;
+    } else if (ratio >= 100) {
+      statusClass = 'warning'; statusText = '注意'; barColor = '#FF9500';
+      infoText = `<strong>接近危險區。</strong> ${dirLabel}維持率 <strong>${ratio.toFixed(1)}%</strong>，已低於 130% 警戒線。建議補繳或減少部位，避免觸及追繳線。`;
+    } else {
+      statusClass = 'danger'; statusText = '追繳'; barColor = '#FF3B30';
+      const shortfall = initTotal - effectiveEquity;
+      infoText = `<strong>需要追繳！</strong> ${dirLabel}維持率 <strong>${ratio.toFixed(1)}%</strong>，低於 100%。需補繳約 <strong>${fmt(Math.max(0, shortfall))} 元</strong>，使帳戶回到原始保證金（${fmt(initTotal)} 元）。`;
+    }
+
+    const tag = document.getElementById('status-tag');
+    tag.className = 'status-tag ' + statusClass;
+    tag.textContent = statusText;
+
+    ratioEl.className = 'metric-cell-value big ' + statusClass;
+
+    const barPct = Math.min(100, Math.max(0, ratio / 2));
+    document.getElementById('ratio-bar').style.width = barPct.toFixed(1) + '%';
+    document.getElementById('ratio-bar').style.background = barColor;
+    document.getElementById('bar-label').textContent = '維持率 ' + ratio.toFixed(1) + '%';
+    document.getElementById('info-box').innerHTML = infoText;
+  }
+
+  calc();
+</script>
+</body>
+</html>
