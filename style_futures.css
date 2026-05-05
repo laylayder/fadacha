@@ -360,3 +360,38 @@ header p { font-size: 14px; color: var(--color-text-sub); margin-top: 4px; }
   .input-grid { grid-template-columns: 1fr; }
   .manual-grid { grid-template-columns: 1fr; }
 }
+
+/* 修正手機版個股期清單全部攤開的異常 */
+.stock-list {
+  max-height: 250px;       /* 限制列表最大高度，只顯示大約 4~5 檔 */
+  overflow-y: auto;        /* 超出高度時，自動啟用垂直滾動條 */
+  border: 1px solid var(--color-border, #e5e7eb); /* 加個輕微的外框線 */
+  border-radius: 8px;      /* 圓角 */
+  margin-top: 8px;
+  background-color: var(--color-bg-card, #ffffff); /* 確保背景色正確 */
+  
+  /* 讓手機版滑動時更順暢 */
+  -webkit-overflow-scrolling: touch; 
+}
+
+/* 微調手機版單個股票項目的間距，在小螢幕上更好點擊 */
+.stock-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;      /* 稍微加大點擊區域 */
+  border-bottom: 1px solid var(--color-border, #f3f4f6);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+/* 移除最後一項的底線 */
+.stock-item:last-child {
+  border-bottom: none;
+}
+
+/* 當被選中時的背景色與文字顏色，確保高亮 */
+.stock-item.selected {
+  background-color: rgba(52, 199, 89, 0.15); /* 淡淡的綠色高亮 */
+  font-weight: bold;
+}
