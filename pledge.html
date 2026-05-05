@@ -16,11 +16,7 @@
 
 <body class="p-4 md:p-8">
     <div class="max-w-2xl mx-auto">
-        <!-- 返回按鈕 (樣式由 style.css 控制) -->
         <a href="index.html" class="back-home">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
             返回首頁
         </a>
 
@@ -30,7 +26,7 @@
         </header>
         
         <!-- 主要輸入區 -->
-        <div class="glass-card p-6 mb-6">
+        <div class="glass-card p-6 mb-6 rounded-2xl shadow-xl">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="relative">
                     <label class="block text-sm font-medium opacity-80">股票代碼</label>
@@ -70,19 +66,19 @@
 
         <!-- 結果顯示區 -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="glass-card p-4 text-center">
+            <div class="glass-card p-4 text-center rounded-2xl shadow-xl">
                 <p class="text-sm opacity-70">當前總市值</p>
                 <p id="resMarketValue" class="text-xl font-bold">NT$ 0</p>
             </div>
-            <div class="glass-card p-4 text-center">
+            <div class="glass-card p-4 text-center rounded-2xl shadow-xl">
                 <p class="text-sm opacity-70">當前維持率</p>
                 <p id="resRatio" class="text-xl font-bold">0%</p>
             </div>
-            <div class="glass-card p-4 text-center">
+            <div class="glass-card p-4 text-center rounded-2xl shadow-xl">
                 <p class="text-sm opacity-70">年利息費用</p>
                 <p id="resInterest" class="text-xl font-bold">NT$ 0</p>
             </div>
-            <div class="glass-card p-4 border-2 border-red-500/50 text-center">
+            <div class="glass-card p-4  text-center rounded-2xl shadow-xl">
                 <p class="text-sm text-red-500 font-bold">維持率下限股價 (下海價)</p>
                 <p id="resCallPrice" class="text-2xl font-black text-red-600">NT$ 0</p>
             </div>
