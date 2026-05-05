@@ -4,9 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>台灣期貨維持率計算機</title>
-  
+
   <script>
-    // 檢查 localStorage 或系統偏好設定
     if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.documentElement.classList.add('dark');
     } else {
@@ -15,7 +14,6 @@
   </script>
 
   <link rel="stylesheet" href="style_futures.css">
-</head>
 </head>
 <body>
 <div class="container">
@@ -28,32 +26,99 @@
 
   <header>
     <h1>台灣期貨維持率計算機</h1>
-    <p>大台指・小台指・微型台指　保證金與維持率試算</p>
+    <p>大台指・小台指・微型台指・個股期貨　保證金與維持率試算</p>
   </header>
 
-  <!-- Contract selection -->
   <div class="card">
-    <div class="section-label">選擇合約</div>
-    <div class="contract-grid">
-      <div class="contract-card active" id="card-big" onclick="selectContract('big')">
-        <div class="contract-name">大台指</div>
-        <div class="contract-code">TX · 每點 200 元</div>
-        <span class="badge">原始 526,000</span>
+    <div class="section-label">商品類別</div>
+    <div class="product-tab-row">
+      <button class="product-tab active" id="ptab-index" onclick="switchProduct('index')">指數期貨</button>
+      <button class="product-tab" id="ptab-stock" onclick="switchProduct('stock')">個股期貨</button>
+    </div>
+
+    <div id="panel-index">
+      <div class="section-label" style="margin-top:12px">選擇合約</div>
+      <div class="contract-grid">
+        <div class="contract-card active" id="card-big" onclick="selectContract('big')">
+          <div class="contract-name">大台指</div>
+          <div class="contract-code">TX · 每點 200 元</div>
+          <span class="badge">原始 526,000</span>
+        </div>
+        <div class="contract-card" id="card-small" onclick="selectContract('small')">
+          <div class="contract-name">小台指</div>
+          <div class="contract-code">MTX · 每點 50 元</div>
+          <span class="badge">原始 131,500</span>
+        </div>
+        <div class="contract-card" id="card-micro" onclick="selectContract('micro')">
+          <div class="contract-name">微型台指</div>
+          <div class="contract-code">IMT · 每點 10 元</div>
+          <span class="badge">原始 26,300</span>
+        </div>
       </div>
-      <div class="contract-card" id="card-small" onclick="selectContract('small')">
-        <div class="contract-name">小台指</div>
-        <div class="contract-code">MTX · 每點 50 元</div>
-        <span class="badge">原始 131,500</span>
+    </div>
+
+    <div id="panel-stock" style="display:none">
+      <div class="stock-mode-row">
+        <div class="stock-tab-row">
+          <button class="stock-tab active" id="stab-preset" onclick="switchStockMode('preset')">前 50 大個股期</button>
+          <button class="stock-tab" id="stab-manual" onclick="switchStockMode('manual')">手動輸入</button>
+        </div>
       </div>
-      <div class="contract-card" id="card-micro" onclick="selectContract('micro')">
-        <div class="contract-name">微型台指</div>
-        <div class="contract-code">IMT · 每點 10 元</div>
-        <span class="badge">原始 26,300</span>
+
+      <div id="spanel-preset">
+        <div class="search-wrap" style="margin-top:12px">
+          <span class="search-icon">&#128269;</span>
+          <input type="text" id="search" placeholder="輸入代號或名稱，例如：2330 或 台積電" oninput="filterList()" />
+        </div>
+        <div class="stock-list" id="stock-list"></div>
+        
+        <div id="selected-bar" class="selected-bar" style="display:none; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+          <div>
+            已選：<strong id="sel-label">—</strong><span id="sel-margin"></span>
+          </div>
+          <button id="btn-fetch-price" onclick="fetchRealtimePrice()" style="padding: 4px 10px; background-color: #34C759; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 4px; transition: background 0.2s;">
+            <span>🔄</span> 擷取即時股價
+          </button>
+        </div>
+        <p class="hint">保證金依目前股價即時計算・資料來源：台灣期交所・保證金僅供估算，請以官網為準</p>
+      </div>
+
+      <div id="spanel-manual" style="display:none;margin-top:12px">
+        <div class="manual-grid">
+          <div class="input-group">
+            <span class="input-label">原始保證金（每口）</span>
+            <div class="input-row">
+              <input type="number" id="m-init" value="100000" step="1000" oninput="calc()" />
+              <span class="input-unit">元</span>
+            </div>
+          </div>
+          <div class="input-group">
+            <span class="input-label">維持保證金（每口）</span>
+            <div class="input-row">
+              <input type="number" id="m-maint" value="77000" step="1000" oninput="calc()" />
+              <span class="input-unit">元</span>
+            </div>
+          </div>
+          <div class="input-group">
+            <span class="input-label">結算保證金（每口）</span>
+            <div class="input-row">
+              <input type="number" id="m-settle" value="75000" step="1000" oninput="calc()" />
+              <span class="input-unit">元</span>
+            </div>
+          </div>
+          <div class="input-group">
+            <span class="input-label">契約乘數（每口股數）</span>
+            <div class="input-row">
+              <input type="number" id="m-mult" value="2000" step="1000" oninput="calc()" />
+              <span class="input-unit">股</span>
+            </div>
+          </div>
+        </div>
+        <p class="hint">請至 <a href="https://www.taifex.com.tw/cht/5/stockMargining" target="_blank" style="color:var(--color-blue)">期交所官網</a> 查詢最新個股期保證金</p>
       </div>
     </div>
   </div>
 
-  <!-- Direction -->
   <div class="card">
     <div class="section-label">交易方向</div>
     <div class="direction-toggle">
@@ -62,7 +127,6 @@
     </div>
   </div>
 
-  <!-- Inputs -->
   <div class="card">
     <div class="section-label">輸入參數</div>
     <div class="input-grid">
@@ -81,23 +145,22 @@
         </div>
       </div>
       <div class="input-group">
-        <span class="input-label">成交點位</span>
+        <span class="input-label" id="label-entry">成交點位</span>
         <div class="input-row">
           <input type="number" id="entryPrice" value="41000" step="1" oninput="calc()" />
-          <span class="input-unit">點</span>
+          <span class="input-unit" id="unit-entry">點</span>
         </div>
       </div>
       <div class="input-group">
-        <span class="input-label">目前點位</span>
+        <span class="input-label" id="label-current">目前點位</span>
         <div class="input-row">
           <input type="number" id="currentPrice" value="39000" step="1" oninput="calc()" />
-          <span class="input-unit">點</span>
+          <span class="input-unit" id="unit-current">點</span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Results -->
   <div class="card">
     <div class="status-row">
       <span class="status-title">
@@ -148,8 +211,7 @@
     <div class="info-box" id="info-box"></div>
   </div>
 
-  <!-- Reference table -->
-  <div class="card">
+  <div class="card" id="ref-index-card">
     <div class="section-label">保證金參考表（每口）</div>
     <table class="ref-table">
       <thead>
@@ -182,96 +244,30 @@
       </tbody>
     </table>
   </div>
+
+  <div class="card" id="ref-stock-card" style="display:none">
+    <div class="section-label">個股期保證金級距（每口）</div>
+    <table class="ref-table">
+      <thead>
+        <tr>
+          <th>級距</th>
+          <th class="text-right">結算保證金</th>
+          <th class="text-right">維持保證金</th>
+          <th class="text-right">原始保證金</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>級距 1</td><td class="text-right">10.00%</td><td class="text-right">10.35%</td><td class="text-right">13.50%</td></tr>
+        <tr><td>級距 2</td><td class="text-right">12.00%</td><td class="text-right">12.42%</td><td class="text-right">16.20%</td></tr>
+        <tr><td>級距 3</td><td class="text-right">15.00%</td><td class="text-right">15.53%</td><td class="text-right">20.25%</td></tr>
+      </tbody>
+    </table>
+    <p class="hint" style="margin-top:8px">公式：保證金 = 股價 × 契約乘數 × 適用比例　・　資料來源：<a href="https://www.taifex.com.tw/cht/5/margingReqSSF" target="_blank" style="color:var(--color-blue)">台灣期交所</a></p>
+  </div>
 </div>
 
-<script>
-  // 保持原有邏輯
-  const CONTRACTS = {
-    big:   { multiplier: 200, initPerLot: 526000, maintPerLot: 403000, settlePerLot: 389000 },
-    small: { multiplier: 50,  initPerLot: 131500, maintPerLot: 100750, settlePerLot: 97250  },
-    micro: { multiplier: 10,  initPerLot: 26300,  maintPerLot: 20150,  settlePerLot: 19450  }
-  };
-
-  let selectedContract = 'big';
-  let direction = 'long';
-
-  function selectContract(key) {
-    selectedContract = key;
-    ['big', 'small', 'micro'].forEach(k => {
-      document.getElementById('card-' + k).classList.toggle('active', k === key);
-    });
-    calc();
-  }
-
-  function selectDir(d) {
-    direction = d;
-    document.getElementById('btn-long').classList.toggle('active', d === 'long');
-    document.getElementById('btn-short').classList.toggle('active', d === 'short');
-    const badge = document.getElementById('dir-badge');
-    badge.textContent = d === 'long' ? '做多' : '放空';
-    badge.className = 'dir-badge ' + d;
-    calc();
-  }
-
-  function fmt(n) {
-    return Math.round(n).toLocaleString('zh-TW');
-  }
-
-  function calc() {
-    const c = CONTRACTS[selectedContract];
-    const qty = Math.max(1, parseInt(document.getElementById('qty').value) || 1);
-    const equity = parseFloat(document.getElementById('equity').value) || 0;
-    const entry = parseFloat(document.getElementById('entryPrice').value) || 0;
-    const current = parseFloat(document.getElementById('currentPrice').value) || 0;
-
-    const initTotal = c.initPerLot * qty;
-    const maintTotal = c.maintPerLot * qty;
-    const settleTotal = c.settlePerLot * qty;
-    const diff = direction === 'long' ? (current - entry) : (entry - current);
-    const pnl = diff * c.multiplier * qty;
-    const effectiveEquity = equity + pnl;
-    const ratio = maintTotal > 0 ? (effectiveEquity / maintTotal) * 100 : 0;
-
-    document.getElementById('r-init').textContent = fmt(initTotal) + ' 元';
-    document.getElementById('r-maint').textContent = fmt(maintTotal) + ' 元';
-    document.getElementById('r-settle').textContent = fmt(settleTotal) + ' 元';
-
-    const pnlEl = document.getElementById('r-pnl');
-    pnlEl.textContent = (pnl >= 0 ? '+' : '') + fmt(pnl) + ' 元';
-    pnlEl.className = 'metric-cell-value ' + (pnl > 0 ? 'success' : pnl < 0 ? 'danger' : '');
-
-    const ratioEl = document.getElementById('r-ratio');
-    ratioEl.textContent = ratio.toFixed(1) + '%';
-
-    let statusClass, statusText, barColor, infoText;
-    const dirLabel = direction === 'long' ? '做多' : '放空';
-
-    if (ratio >= 130) {
-      statusClass = 'success'; statusText = '健康'; barColor = '#34C759';
-      infoText = `<strong>${dirLabel}部位安全。</strong> 維持率 <strong>${ratio.toFixed(1)}%</strong>，高於追繳線，有效權益 ${fmt(effectiveEquity)} 元。`;
-    } else if (ratio >= 100) {
-      statusClass = 'warning'; statusText = '注意'; barColor = '#FF9500';
-      infoText = `<strong>接近危險區。</strong> ${dirLabel}維持率 <strong>${ratio.toFixed(1)}%</strong>，已低於 130% 警戒線。建議補繳或減少部位，避免觸及追繳線。`;
-    } else {
-      statusClass = 'danger'; statusText = '追繳'; barColor = '#FF3B30';
-      const shortfall = initTotal - effectiveEquity;
-      infoText = `<strong>需要追繳！</strong> ${dirLabel}維持率 <strong>${ratio.toFixed(1)}%</strong>，低於 100%。需補繳約 <strong>${fmt(Math.max(0, shortfall))} 元</strong>，使帳戶回到原始保證金（${fmt(initTotal)} 元）。`;
-    }
-
-    const tag = document.getElementById('status-tag');
-    tag.className = 'status-tag ' + statusClass;
-    tag.textContent = statusText;
-
-    ratioEl.className = 'metric-cell-value big ' + statusClass;
-
-    const barPct = Math.min(100, Math.max(0, ratio / 2));
-    document.getElementById('ratio-bar').style.width = barPct.toFixed(1) + '%';
-    document.getElementById('ratio-bar').style.background = barColor;
-    document.getElementById('bar-label').textContent = '維持率 ' + ratio.toFixed(1) + '%';
-    document.getElementById('info-box').innerHTML = infoText;
-  }
-
-  calc();
-</script>
+<script src="marginitem.js"></script>
+</body>
+</html>
 </body>
 </html>
